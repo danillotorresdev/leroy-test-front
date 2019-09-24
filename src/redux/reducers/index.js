@@ -1,11 +1,9 @@
 import { combineReducers } from 'redux';
-import users from './users';
-import books from './books';
 import products from './products';
+import freight from './freight';
 
 const rootReducer = combineReducers({
-  users,
-  books,
+  freight,
   products,
 });
 

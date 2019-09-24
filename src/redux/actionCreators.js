@@ -20,6 +20,12 @@ export const {
 
   saveProductsInCartSuccess: ['productsInCart'],
 
+  getFreightRequest: null,
+  getFreightSuccess: ['freight'],
+  getFreightFailure: null,
+
+  saveFreightSuccess: ['freight'],
+
 });
 
 export default Creators;

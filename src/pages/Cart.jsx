@@ -17,7 +17,10 @@ class Cart extends Component {
       valorTotal: 0,
       novoValorTotal: 0,
       produtosAdicionados: [],
+      freightWithTotal: 0,
       removidos: [],
+      freight: '',
+
     };
 
     this.handlePurchase = this.handlePurchase.bind(this);
@@ -25,6 +28,8 @@ class Cart extends Component {
     this.handleEmail = this.handleEmail.bind(this);
     this.backToHome = this.backToHome.bind(this);
     this.handleSumPrices = this.handleSumPrices.bind(this);
+    this.handleFreight = this.handleFreight.bind(this);
+    this.handleSaveFreight = this.handleSaveFreight.bind(this);
   }
 
   componentDidMount() {
@@ -110,6 +115,27 @@ class Cart extends Component {
     });
   }
 
+  handleFreight(e) {
+    this.setState({
+      freight: e.target.value,
+    });
+  }
+
+  handleSaveFreight() {
+    const { saveFreight, loadFreight } = this.props;
+    const { freight, valorTotal } = this.state;
+    saveFreight(freight);
+
+    loadFreight();
+    setTimeout(() => {
+      this.setState({
+        // eslint-disable-next-line react/destructuring-assignment
+        freightWithTotal: parseFloat(this.props.freightValue.freight) + parseFloat(valorTotal),
+      });
+    }, 1000);
+  }
+
+
   render() {
     const {
       productsInCart,
@@ -117,7 +143,10 @@ class Cart extends Component {
       hide,
       valorTotal,
       novoValorTotal,
+      freightWithTotal,
     } = this.state;
+    const { freightValue } = this.props;
+    const { freight } = freightValue;
 
     if (productsInCart) {
       setTimeout(() => {
@@ -135,44 +164,75 @@ class Cart extends Component {
               : <p className="m-0 pl-3 text-info">{`Você escolheu ${productsInCart.length} produtos`}</p>
             }
           </div>
-          <div>
-            <button type="button" className="btn btn-success" data-toggle="modal" data-target="#exampleModal">Finalizar Compra</button>
-          </div>
+
         </div>
         <div className="container pt-4">
           <div className="row">
-
-            {productsInCart.map(
-              product => (
-                <div role="presentation" key={product.id} className="col-md-3">
-                  <div className="card border-0" style={{ width: '100%' }}>
-                    <img src={product.image} className="card-img-top" alt="..." />
-                    <div className="card-body">
-                      <h5 className="card-title">{product.title}</h5>
-                      <p className="card-title">{product.price}</p>
-                      <div className="">
-                        <p>Quantidade</p>
-                        {console.log(this.state.adicionados)}
-                        <p>1</p>
-                        <p>Adicionar </p>
-                        <button onClick={() => this.addProduct(product.price)}>+</button>
-                        <p>Remover</p>
-                        <button onClick={() => this.removeProduct(product.price)}>-</button>
+            <div className="col-md-9">
+              <div className="row">
+                {productsInCart.map(
+                  product => (
+                    <div role="presentation" key={product.id} className="col-md-4">
+                      <div className="card border-0" style={{ width: '100%' }}>
+                        <img src={product.image} className="card-img-top" alt="..." />
+                        <div className="card-body">
+                          <h5 className="card-title">{product.title}</h5>
+                          <p className="card-title">{product.price}</p>
+                        </div>
                       </div>
                     </div>
+                  ),
+                )}
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="row">
+                <h1>{`Total: ${novoValorTotal ? novoValorTotal.toFixed(2) : valorTotal.toFixed(2)}`}</h1>
+              </div>
+              <div className="row">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Calcular Frete</label>
+                  <div className="d-flex">
+                    <input
+                      type="text"
+                      onChange={e => this.handleFreight(e)}
+                      className="form-control"
+                      placeholder="Digite o frete"
+                    />
+                    <button
+                      type="button"
+                      onClick={this.handleSaveFreight}
+                      className="btn btn-primary ml-2"
+                    >
+                      Calcular
+                    </button>
                   </div>
                 </div>
-              ),
-            )}
+
+              </div>
+              <div className="row">
+                {freight && (
+                  <p>
+                    {`Valor do frete: ${freight}`}
+                  </p>
+                )}
+              </div>
+              <div className="row">
+                {freight && (
+                  <p>{`Valor com o frete: ${freightWithTotal.toFixed(2)}`}</p>
+                )
+                }
+              </div>
+              <div className="row">
+                <div>
+                  <button type="button" className="btn btn-success" data-toggle="modal" data-target="#exampleModal">Finalizar Compra</button>
+                </div>
+              </div>
+            </div>
 
           </div>
         </div>
-        <div className="container">
-          <div className="row">
-            <h1>{`Total: ${novoValorTotal ? novoValorTotal.toFixed(2) : valorTotal.toFixed(2)}`}</h1>
-
-          </div>
-        </div>
+        <div className="container" />
 
         <div className={`modal fade ${hide}`} id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div className="modal-dialog" role="document">
@@ -216,11 +276,13 @@ class Cart extends Component {
 }
 
 const mapStateToProps = state => ({
-  books: state.books,
+  freightValue: state.freight.data,
 });
 
 const mapDispatchToProps = dispatch => ({
   loadBooks: () => dispatch(ActionCreators.getBooksRequest()),
+  saveFreight: freight => dispatch(ActionCreators.saveFreightSuccess(freight)),
+  loadFreight: () => dispatch(ActionCreators.getFreightRequest()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Cart);

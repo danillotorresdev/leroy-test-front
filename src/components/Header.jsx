@@ -33,7 +33,7 @@ class Header extends Component {
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <div className="container">
             <div className="w-25">
-              <a className="navbar-brand" href="/"><img className="img-fluid logo" src="/book.png" alt="logo" /></a>
+              <a className="navbar-brand" href="/"><img className="img-fluid logo" src="/Leroy_Merlin.png" alt="logo" /></a>
             </div>
             {!window.location.href.includes('login')
               && (
@@ -47,7 +47,6 @@ class Header extends Component {
                       {productsInCart.length}
                       )
                     </Link>
-                    <button className="btn btn-light ml-2" type="button" onClick={this.logout}>Sair</button>
                   </div>
                 </div>
               )
